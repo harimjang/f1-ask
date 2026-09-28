@@ -100,7 +100,7 @@ const getBaseNews = unstable_cache(
 const getLocalizedNews = (locale: string): Promise<NewsItem[]> =>
   unstable_cache(
     async (): Promise<NewsItem[]> => translateNews(await getBaseNews(), locale),
-    ["news-localized", "v2", locale],
+    ["news-localized", "v3", locale],
     { revalidate, tags: ["news"] },
   )();
 

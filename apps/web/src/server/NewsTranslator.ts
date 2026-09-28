@@ -8,7 +8,9 @@ import { applyNewsTranslation, NewsItem } from "@f1/domain";
 
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
 
+// 영어 포함 — 영어 로케일도 발췌를 그대로 두지 않고 요약을 새로 쓴다(사용자 요청).
 const LANGUAGE: Record<string, string> = {
+  en: "English",
   ko: "Korean",
   ja: "Japanese",
 };
@@ -35,18 +37,22 @@ export const translateNews = async (
   }
 
   try {
+    // 입력은 excerpt(원문 발췌·소스)로 준다 — 모델이 이를 근거로 summary 를 새로 쓴다.
     const payload = items.map((item) => ({
       id: item.id,
       title: item.title,
-      summary: item.summary ?? "",
+      excerpt: item.summary ?? "",
     }));
 
     const system =
-      `You translate Formula 1 news headlines and summaries into ${language}. ` +
-      `Keep it concise and natural for F1 fans. Preserve driver surnames, team names, ` +
-      `sponsor and circuit names, and render "Grand Prix" idiomatically. ` +
-      `Return ONLY a JSON array of objects {id, title, summary} with the SAME ids, ` +
-      `translating title and summary. No commentary, no code fences.`;
+      `You localize Formula 1 news for ${language} readers. For each item do two things: ` +
+      `(1) render the title in ${language} (translate if needed; keep driver surnames, team, ` +
+      `sponsor and circuit names, and "Grand Prix" idiomatic); ` +
+      `(2) write a fresh, concise ONE-sentence summary in ${language} of what the article is ` +
+      `about, based on the title and the provided excerpt — do NOT copy the excerpt verbatim ` +
+      `or just its opening; capture the key point in your own words. ` +
+      `Return ONLY a JSON array of objects {id, title, summary} with the SAME ids. ` +
+      `No commentary, no code fences.`;
 
     const body = {
       contents: [{ role: "user", parts: [{ text: JSON.stringify(payload) }] }],
