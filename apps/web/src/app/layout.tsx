@@ -32,6 +32,14 @@ export const viewport: Viewport = {
 // 루트 레이아웃. lang 은 [locale] 세그먼트에서 클라이언트로 갱신한다.
 const RootLayout = ({ children }: { children: ReactNode }) => (
   <html lang={DEFAULT_LOCALE} suppressHydrationWarning>
+    <head>
+      {/* Pretendard — 한글 최적화 가변 폰트(dynamic-subset: 쓰는 글자만 로드). */}
+      <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css"
+      />
+    </head>
     <body className="min-h-screen antialiased">
       <ServiceWorkerRegister />
       {children}
